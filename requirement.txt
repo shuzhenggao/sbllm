@@ -1,0 +1,7 @@
+jsonlines==4.0.0
+numpy==1.26.1
+openai==0.28.1
+tqdm==4.66.1
+google-generativeai==0.3.2
+rank_bm25==0.2.2
+editdistance==0.6.2

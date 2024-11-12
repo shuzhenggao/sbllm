@@ -17,7 +17,7 @@ llama_api_keys = [
 "xxxxxxxxxxxxxxxxxxxx",
 ]
 openai_api_keys = [
-'sk-xxxxxxxxxxxxxxxxxxxx',
+'xxxxxxxxxxxxxxxxxxxx',
 ]
 gemini_api_keys = [
 "xxxxxxxxxxxxxxxxxxxx"
@@ -248,7 +248,7 @@ def openai_official(chunk_data):
                     del query['prompt_chat']
                 with jsonlines.open(os.path.join(cfg.generation_path, cfg.mode, 'prediction_{}_{}_{}_{}.jsonl'.format(cfg.model_name, str(cfg.api_idx), str(len(api_keys)), 'test')), "a") as f:
                     f.write_all([query])
-                sleep(2)
+                sleep(0.01)
             except Exception  as e:
                 info = e.args[0]
                 fail_count+=1

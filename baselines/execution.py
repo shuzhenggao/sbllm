@@ -117,7 +117,6 @@ def testing_and_reporting(cfg):
     error_file = open(os.path.join(cfg.output_path, cfg.mode, "stderr.txt"), "wb")
     out_file = open(os.path.join(cfg.output_path, cfg.mode, "output.txt"),"wb")
     print("testing......")
-    
     if not os.path.exists(os.path.join(cfg.output_path, cfg.mode, 'test_execution_{}.report'.format(cfg.model_name+'test'))):
         cmd = 'cd ../pie; python src/codenet_eval/run_eval_feedback.py --eval_config {}'.format(os.path.join(cfg.output_path, cfg.mode, 'eval_config.yaml'))
         child = subprocess.Popen(cmd, shell=True, stdout=out_file, stderr=error_file, bufsize=-1, start_new_session=True)

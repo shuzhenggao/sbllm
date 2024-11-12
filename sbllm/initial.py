@@ -83,7 +83,7 @@ else:
 
 
 previous_perf = {}
-with jsonlines.open('../output/{}/cot/test_execution_{}test.report'.format(cfg.lang, cfg.model_name)) as f:
+with jsonlines.open('../output/{}/cot/top5/test_execution_{}test.report'.format(cfg.lang, cfg.model_name)) as f:
     for obj in f:
         previous_perf[remove_comments_and_docstrings(obj['code_v0_no_empty_lines'],cfg.lang)] = obj
 
@@ -92,6 +92,5 @@ for obj in data:
     best_result = {'code':'', 'acc':0, 'time':99999, 'input_time':previous_perf[obj['query']]['input_time_mean'], 'reference_time':previous_perf[obj['query']]['reference_time_mean']}
     processed_data.append({'idx':obj['idx'], 'query':obj['query'], 'reference':obj['reference'], 'stop':0, 'best_result':best_result, 'best_candidates':[], 'pattern':[]})
    
-with jsonlines.open('../output/{}/initial_results_{}.jsonl'.format(cfg.lang, cfg.model_name)) as f:
-    for obj in f:
-        data.append(obj)
+with jsonlines.open('../output/{}/initial_results_{}.jsonl'.format(cfg.lang, cfg.model_name), 'w') as f:
+    f.write_all(processed_data)

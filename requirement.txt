@@ -5,3 +5,4 @@ tqdm==4.66.1
 google-generativeai==0.3.2
 rank_bm25==0.2.2
 editdistance==0.6.2
+tree-sitter==0.20.4

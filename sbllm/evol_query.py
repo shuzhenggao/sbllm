@@ -19,7 +19,7 @@ llama_api_keys = [
 "xxxxxxxxxxxxxxxxxxxx",
 ]
 openai_api_keys = [
-'sk-xxxxxxxxxxxxxxxxxxxx',
+'xxxxxxxxxxxxxxxxxxxx',
 ]
 gemini_api_keys = [
 "xxxxxxxxxxxxxxxxxxxx"
@@ -97,7 +97,7 @@ Desired output format:
 
 def prompt_construction(cfg, queries):
     results = []
-    with jsonlines.open(os.path.join(cfg.generation_path, cfg.mode, 'results.jsonl')) as f:
+    with jsonlines.open(os.path.join(cfg.generation_path, cfg.lang, cfg.mode, 'results.jsonl')) as f:
         for obj in f:
             results.append(obj)
 
@@ -193,7 +193,7 @@ def openai_llama(chunk_data):
                 if len(query['prediction'])>=5:
                     if 'prompt_chat' in query:
                         del query['prompt_chat']
-                    with jsonlines.open(os.path.join(cfg.generation_path, cfg.mode, str(cfg.iteration), 'prediction_{}_{}_{}_{}.jsonl'.format(cfg.model_name,str(cfg.api_idx),str(len(api_keys)), 'test')), "a") as f:
+                    with jsonlines.open(os.path.join(cfg.generation_path, cfg.lang, cfg.mode, str(cfg.iteration), 'prediction_{}_{}_{}_{}.jsonl'.format(cfg.model_name,str(cfg.api_idx),str(len(api_keys)), 'test')), "a") as f:
                         f.write_all([query])
                     sleep(2)
             except Exception  as e:
@@ -258,7 +258,7 @@ def openai_gemini(chunk_data):
                 if len(query['prediction'])>=5:
                     if 'prompt_chat' in query:
                         del query['prompt_chat']
-                    with jsonlines.open(os.path.join(cfg.generation_path, cfg.mode, str(cfg.iteration), 'prediction_{}_{}_{}_{}.jsonl'.format(cfg.model_name,str(cfg.api_idx),str(len(api_keys)), 'test')), "a") as f:
+                    with jsonlines.open(os.path.join(cfg.generation_path, cfg.lang, cfg.mode, str(cfg.iteration), 'prediction_{}_{}_{}_{}.jsonl'.format(cfg.model_name,str(cfg.api_idx),str(len(api_keys)), 'test')), "a") as f:
                         f.write_all([query])
                     sleep(random.uniform(1,3))
                 else:
@@ -297,7 +297,7 @@ def openai_official(chunk_data):
                 {"role": "system", "content": "You are a software developer and now you will help to improve code efficiency. Please follow the instructions and output format specification to generate a more efficient code. The improved code should be in code blocks (```{} ```).".format(cfg.lang)},
             ]
             messages.extend(query['prompt_chat'])
-            try:
+            try:    
                 response = openai.ChatCompletion.create(model=model, messages=messages, n=cfg.generation_number, temperature=0.7)
                 success=1
                 model = "gpt-3.5-turbo-0613"
@@ -305,9 +305,9 @@ def openai_official(chunk_data):
                 query['detailed_prediction'] = response["choices"]
                 if 'prompt_chat' in query:
                     del query['prompt_chat']
-                with jsonlines.open(os.path.join(cfg.generation_path, cfg.mode, str(cfg.iteration), 'prediction_{}_{}_{}_{}.jsonl'.format(cfg.model_name,str(cfg.api_idx),str(len(api_keys)), 'test')), "a") as f:
+                with jsonlines.open(os.path.join(cfg.generation_path, cfg.lang, cfg.mode, str(cfg.iteration), 'prediction_{}_{}_{}_{}.jsonl'.format(cfg.model_name,str(cfg.api_idx),str(len(api_keys)), 'test')), "a") as f:
                     f.write_all([query])
-                sleep(2)
+                sleep(0.02)
             except Exception  as e:
                 info = e.args[0]
                 fail_count+=1
@@ -335,7 +335,7 @@ def read_file(cfg):
             queries.append(obj)
     queries = queries[int(len(queries)*(cfg.slice-1)/cfg.total):int(len(queries)*cfg.slice/cfg.total)]
 
-    if cfg.iteration>1:
+    if cfg.iteration>0:
         ids, queries = prompt_construction(cfg, queries)
     else:
         ids = [i for i in range(1000)]
@@ -343,16 +343,16 @@ def read_file(cfg):
 
     unsort_queries = []
     for num in range(len(api_keys)):
-        if os.path.exists(os.path.join(cfg.generation_path, cfg.mode, str(cfg.iteration), 'prediction_{}_{}_{}_{}.jsonl'.format(cfg.model_name,str(num),str(len(api_keys)),'test'))):
-            with jsonlines.open(os.path.join(cfg.generation_path, cfg.mode, str(cfg.iteration), 'prediction_{}_{}_{}_{}.jsonl'.format(cfg.model_name,str(num),str(len(api_keys)),'test'))) as f:
+        if os.path.exists(os.path.join(cfg.generation_path, cfg.lang, cfg.mode, str(cfg.iteration), 'prediction_{}_{}_{}_{}.jsonl'.format(cfg.model_name,str(num),str(len(api_keys)),'test'))):
+            with jsonlines.open(os.path.join(cfg.generation_path, cfg.lang, cfg.mode, str(cfg.iteration), 'prediction_{}_{}_{}_{}.jsonl'.format(cfg.model_name,str(num),str(len(api_keys)),'test'))) as f:
                 for obj in f:
                     unsort_queries.append(obj)
         if len(unsort_queries)>0:
-            with jsonlines.open(os.path.join(cfg.generation_path, cfg.mode, str(cfg.iteration), 'prediction_{}_{}.jsonl'.format(cfg.model_name,'test')), 'w') as f:
+            with jsonlines.open(os.path.join(cfg.generation_path, cfg.lang, cfg.mode, str(cfg.iteration), 'prediction_{}_{}.jsonl'.format(cfg.model_name,'test')), 'w') as f:
                 f.write_all(unsort_queries)
 
-    if os.path.exists(os.path.join(cfg.generation_path, cfg.mode, str(cfg.iteration), 'prediction_{}_{}.jsonl'.format(cfg.model_name,'test'))):
-        with jsonlines.open(os.path.join(cfg.generation_path, cfg.mode, str(cfg.iteration), 'prediction_{}_{}.jsonl'.format(cfg.model_name,'test'))) as f:
+    if os.path.exists(os.path.join(cfg.generation_path, cfg.lang, cfg.mode, str(cfg.iteration), 'prediction_{}_{}.jsonl'.format(cfg.model_name,'test'))):
+        with jsonlines.open(os.path.join(cfg.generation_path, cfg.lang, cfg.mode, str(cfg.iteration), 'prediction_{}_{}.jsonl'.format(cfg.model_name,'test'))) as f:
             for obj in f:
                 exist_queries.add(obj['idx'])
         new_queries = []
@@ -383,7 +383,7 @@ def separate_lines(code):
 
 def post_process(cfg, ids):
     data = []
-    with jsonlines.open(os.path.join(cfg.generation_path, cfg.mode, str(cfg.iteration), 'prediction_{}_{}.jsonl'.format(cfg.model_name,'test'))) as f:
+    with jsonlines.open(os.path.join(cfg.generation_path, cfg.lang, cfg.mode, str(cfg.iteration), 'prediction_{}_{}.jsonl'.format(cfg.model_name,'test'))) as f:
         for obj in f:
             data.append(obj)
     count=0
@@ -436,12 +436,12 @@ def post_process(cfg, ids):
         if 'detailed_prediction' not in obj:
             obj['detailed_prediction'] = detailed_prediction
         processed_data.append(obj)
-    with jsonlines.open(os.path.join(cfg.generation_path, cfg.mode, str(cfg.iteration), 'tmp_queries_{}test.jsonl'.format(cfg.model_name)), 'w') as f:
+    with jsonlines.open(os.path.join(cfg.generation_path, cfg.lang, cfg.mode, str(cfg.iteration), 'tmp_queries_{}test.jsonl'.format(cfg.model_name)), 'w') as f:
         f.write_all(processed_data)
     print(count)
     for num in range(len(api_keys)):
-        if os.path.exists(os.path.join(cfg.generation_path, cfg.mode, str(cfg.iteration), 'prediction_{}_{}_{}_{}.jsonl'.format(cfg.model_name,str(num),str(len(api_keys)),'test'))):
-            os.remove(os.path.join(cfg.generation_path, cfg.mode, str(cfg.iteration), 'prediction_{}_{}_{}_{}.jsonl'.format(cfg.model_name,str(num),str(len(api_keys)),'test')))
+        if os.path.exists(os.path.join(cfg.generation_path, cfg.lang, cfg.mode, str(cfg.iteration), 'prediction_{}_{}_{}_{}.jsonl'.format(cfg.model_name,str(num),str(len(api_keys)),'test'))):
+            os.remove(os.path.join(cfg.generation_path, cfg.lang, cfg.mode, str(cfg.iteration), 'prediction_{}_{}_{}_{}.jsonl'.format(cfg.model_name,str(num),str(len(api_keys)),'test')))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -462,8 +462,8 @@ if __name__ == "__main__":
     parser.add_argument("--slice", default=1, type=int)
     parser.add_argument("--total", default=1, type=int)
     cfg = parser.parse_args()
-    if not os.path.exists(os.path.join(cfg.generation_path, cfg.mode, str(cfg.iteration))):
-        os.makedirs(os.path.join(cfg.generation_path, cfg.mode, str(cfg.iteration)))
+    if not os.path.exists(os.path.join(cfg.generation_path, cfg.lang, cfg.mode, str(cfg.iteration))):
+        os.makedirs(os.path.join(cfg.generation_path, cfg.lang, cfg.mode, str(cfg.iteration)))
     fail_count = 0
     if cfg.model_name == 'gemini':
         api_keys = gemini_api_keys
@@ -473,6 +473,7 @@ if __name__ == "__main__":
         api_keys = openai_api_keys
     while True:
         ids, queries, previous_length = read_file(cfg)
+        print(previous_length)
         if cfg.model_name == 'gemini' or cfg.model_name == 'codellama':
             post_process(cfg, ids)
             sys.exit(0)
@@ -495,8 +496,8 @@ if __name__ == "__main__":
             results = pool.map(openai_official, chunks_data)
 
         data = []
-        if os.path.exists(os.path.join(cfg.generation_path, cfg.mode, str(cfg.iteration), 'prediction_{}_{}.jsonl'.format(cfg.model_name,'test'))):
-            with jsonlines.open(os.path.join(cfg.generation_path, cfg.mode, str(cfg.iteration), 'prediction_{}_{}.jsonl'.format(cfg.model_name,'test'))) as f:
+        if os.path.exists(os.path.join(cfg.generation_path, cfg.lang, cfg.mode, str(cfg.iteration), 'prediction_{}_{}.jsonl'.format(cfg.model_name,'test'))):
+            with jsonlines.open(os.path.join(cfg.generation_path, cfg.lang, cfg.mode, str(cfg.iteration), 'prediction_{}_{}.jsonl'.format(cfg.model_name,'test'))) as f:
                 for i in f:
                     data.append(i)
         

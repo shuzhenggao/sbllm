@@ -1,0 +1,20 @@
+language: "python"
+model_generated_outputs_path: /data/szgao/pie/data/pie-perf-main/data/codenet/splits/pie/python_splits/results/chatgpt_bsl.jsonl
+inputs_outputs_basepath: "/data/szgao/pie/data/pie-perf-main/data/codenet/public_test_cases"
+reference_file_path: /data/szgao/pie/data/pie-perf-main/data/codenet/splits/pie/python_splits/test.jsonl
+output_report_file_path: /data/szgao/pie/data/pie-perf-main/data/codenet/splits/pie/python_splits/chatgpt_bsl.jsonl.report
+preprocessed_output_file: "/data/szgao/pie/data/pie-perf-main/data/codenet/splits/pie/python_splits/processed_time.reports"
+num_problems_to_evaluate: -1
+num_trials: 25
+ignore_first_k: 1
+max_time_per_run: 10
+temp_dir: "/data/szgao/pie/data/pie-perf-main/data/codenet/splits/pie/python_splits/tmp"
+model_generated_potentially_faster_code_col: "model_generated_potentially_faster_code_col" # for model_generated_outputs_path
+slow_code_col: "slow_code_col" # for model_generated_outputs_path
+reference_code_col: "target" # for reference_file_path
+reference_input_col: "input"
+is_prompt_based: False
+run_reference: True
+run_input: True
+cpu_number: 40
+process_number: 50

@@ -42,17 +42,17 @@ do
   fi
 done
 
-output_path=../output/$lang/$base_mode
+output_path=../output/$lang/$base_mode/4
 mode=top1
 python evaluate.py  --do_train --mode $mode --lang $lang  --process_number 60 \
                     --output_path $output_path --model_name $model_name  --slice 1 --testing_number 0 --test_case_path $private_test_case_path
 
-output_path=../output/$lang/$base_mode
+output_path=../output/$lang/$base_mode/4
 mode=top3
 python evaluate.py  --do_train --mode $mode --lang $lang  --process_number 60 \
                     --output_path $output_path --model_name $model_name  --slice 1 --testing_number 0 --test_case_path $private_test_case_path
 
-output_path=../output/$lang/$base_mode
+output_path=../output/$lang/$base_mode/4
 mode=top5
 python evaluate.py  --do_train --mode $mode --lang $lang  --process_number 60 \
                     --output_path $output_path --model_name $model_name  --slice 1 --testing_number 0 --test_case_path $private_test_case_path
